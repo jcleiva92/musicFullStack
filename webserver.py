@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash, jso
 app=Flask(__name__)
 
 from getSong import downloadSong
-from attachMeta import getFileName
+from attachMeta import getFileName, cleanFileName, getPage, getResults
 
 @app.route('/')	
 @app.route('/index/',methods=['GET','POST'])
@@ -32,12 +32,17 @@ def fixSongs(path=None,val=None):
 		path='Sin path'
 	if val is None:
 		val=1
-	#nResults=5
+	nResults=5
 	if request.method=='POST':
-		#results=getFileName(path,nResults)
 		print path
 		if path =='Sin path': path=request.form['path']
-		flash("Canciones arregladas en la direccion "+path)
+		fnames=getFileName(path,nResults)
+		for fname in fnames:
+			searchFor=cleanFileName(fname)
+			pageTableBase=getPage(searchFor,0)
+			#getResults(page,nResults)
+			flash("Cancion "+fname+" arreglada en la direccion "+path)
+			
 		if val==1: return redirect(url_for('fixSongs',path=path, val=2))
 		return redirect(url_for('fixSongs',path=path, val=val))
 	else:
