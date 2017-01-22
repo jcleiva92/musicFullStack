@@ -56,19 +56,68 @@
 			<div class="col-md-4 questionMark">
 				<img class="img-responsive" src="/static/images/question.png" width="15%"" alt="Question Mark">
 			</div>
-	   </div>
+		</div>
 		{% endif %}
 		{% if val==2%}
-		<div class="row">
-			<div class="col-md-3 text-right">
-                <h2 class="super-title intro"> Volver al inicio?</h2>
+			<div class="row">
+				<div class="col-md-12 text-left">
+					<h2 class="super-title intro"> Resultados: </h2>
+				</div>
 			</div>
-			<div class="col-md-9">
-				<form action ="{{url_for('gSong')}}" method='GET'>
-				<input type='submit' value='Volver'>
+			<div class="row">
+				<div class="col-md-1"><h3 class="super-title text-center">Option</h3></div>
+					{% for j in results.keys() %}
+					{% if j !='UrlSong' and j != 'Cover'%}
+					{% if j !='UrlAlbum' %}
+					<div class="col-md-2 text-center">
+					{% else %}
+					<div class="col-md-3 text-center">
+					{% endif %}
+						{% if j == 'Name' %}
+							<h3 class="super-title">Song</h3>
+						{% elif j == 'UrlAlbum'%}
+							<h3 class="super-title">Album Cover</h3>
+						{% else %}
+							<h3 class="super-title">{{j}}</h3>
+						{% endif %}
+					</div>
+					{% endif %}
+					{% endfor %}
+				</div>
+				</div>
+			{% for i in range(0,(results.values()[0].keys())| length)%}
+				<div class="row">
+					<div class="col-md-1"><p class="super-title text-center">{{i}}</p></div>
+						{% for j in results.keys() %}
+						{% if j !='UrlSong' and j != 'Cover'%}
+						{% if j !='UrlAlbum' %}
+						<div class="col-md-2 text-center">
+						<p class="super-title">{{results[j][i]}}</p>
+						{% else %}
+						<div class="col-md-3 text-center">
+						{% if results[j][i] != 'No Available'%}
+							<img class="img-responsive thumb center-block" src="{{results[j][i]}}" alt="Cover Album" width=50%>
+						{%else%}
+							<p class="super-title text-center">{{results[j][i]}}</p>
+						{%endif%}
+						{% endif %}
+							
+						</div>
+						{% endif %}
+						{% endfor %}
+					</div>
+				</div>
+			{% endfor %}		
+			<div class="row">
+				<div class="col-md-3 text-right">
+					<h2 class="super-title intro"> Volver al inicio?</h2>
+				</div>
+				<div class="col-md-9">
+					<form action ="{{url_for('gSong')}}" method='GET'>
+					<input type='submit' value='Volver'>
+				</div>
 			</div>
-	   </div>
-	   {% endif %}
+		{% endif %}
     </div>
     </body>
 </html>

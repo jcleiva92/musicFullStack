@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
-app=Flask(__name__)
+app = Flask(__name__)
 
 from getSong import downloadSong
 from attachMeta import getFileName, cleanFileName, getPage, getResults
@@ -34,16 +34,19 @@ def fixSongs(path=None,val=None):
 		val=1
 	nResults=5
 	if request.method=='POST':
-		print path
 		if path =='Sin path': path=request.form['path']
 		fnames=getFileName(path,nResults)
 		for fname in fnames:
 			searchFor=cleanFileName(fname)
 			pageTableBase=getPage(searchFor,0)
-			#getResults(page,nResults)
+			results=getResults(pageTableBase,nResults)
+			for categoriaKey in  results.keys():
+				print categoriaKey
+				for indexKey, value in results[categoriaKey].items():
+					print indexKey,value
 			flash("Cancion "+fname+" arreglada en la direccion "+path)
 			
-		if val==1: return redirect(url_for('fixSongs',path=path, val=2))
+		if val==1: return render_template('fixSongs.html',path=path, val=2, results=results)
 		return redirect(url_for('fixSongs',path=path, val=val))
 	else:
 		return render_template('fixSongs.html',path=path, val=val)

@@ -1,6 +1,12 @@
 .super-title{
 	font-family: 'Indie Flower', cursive;
 	color:white;
+	margin-left:10px;
+	vertical-align: middle;
+}
+
+.thumb{
+	margin:20px;
 }
 
 .intro{
@@ -14,7 +20,7 @@
 		margin:0px;
 		padding:0px;
 		}
-	
+
 body{
 	background-color: #1c6d7f;
 }
