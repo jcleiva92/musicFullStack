@@ -79,25 +79,44 @@ def getData(page,init):
 		urlAlbum,f=getInfo(page,f,'<a href="')
 	album,f=getInfo(page,f,'<bdi>')
 	track,f=getInfo(page,f,'<td>')
-	if getThumb(urlAlbum,name)[0]: 
+	if getThumb(urlAlbum)[0]: 
 		cover='Available'
-		urlAlbum=getThumb(urlAlbum,name)[2]
+		urlAlbum=getThumb(urlAlbum)[1]
 	else: 
 		cover= 'No Available'
-		urlAlbum='No Available'
-	album=album.replace('&amp;','&')
-	return name, band, album, track,cover, urlAlbum,urlSong,f
+		urlAlbum='/static/images/keep-calm-i-m-not-available.png'
+	
+	return name.decode('utf-8').replace('&amp;','&'), band.decode('utf-8').replace('&amp;','&'), album.decode('utf-8').replace('&amp;','&'), track.decode('utf-8').replace('&amp;','&'),cover.decode('utf-8').replace('&amp;','&'), urlAlbum,urlSong,f
 
-def getThumb(urlAlbum,name):
+def downloadThumb(urlAlbum,name,path):
+	os.chdir(path)
+	newName=cleanBasic(name)	
+	if '.jpg' in urlAlbum:
+		urllib.urlretrieve(urlAlbum,newName+'.jpg')
+	else: urllib.urlretrieve(urlAlbum,newName+'.png')
+	
+def getThumb(urlAlbum):
 	'''search and download Thumbnail'''
 	pg=urllib.urlopen('https://musicbrainz.org'+urlAlbum).read()
-	newName=cleanBasic(name).decode('utf-8')
 	if pg.find('<div class="cover-art">')!=-1:
 		i=pg.find('<div class="cover-art">')+len('<div class="cover-art">')
 		i=pg.find('//',i)+len('//')
 		f=pg.find('"',i)
 		if '.jpg' in pg[i:f]:
-			return True,'.jpg','https://'+pg[i:f],newName+'.jpg'
+			return True,'https://'+pg[i:f]
 		if '.png' in pg[i:f]:
-			return True,'.png','https://'+pg[i:f],newName+'.png'
+			return True,'https://'+pg[i:f]
 	return False,'',''
+	
+def getGenre(urlSong):
+	'''search and get genre'''
+	pg=urllib.urlopen('https://musicbrainz.org'+urlSong+'/tags').read()
+	pg,f=getInfo(pg,0,'<div id="all-tags">')
+	genre=''
+	i=0
+	while pg.find('<bdi>',i)!=-1:
+		aux,i=getInfo(pg,i,'<bdi>')
+		genre+=aux+'-'
+	if not genre:
+		genre='No genre'
+	return genre[:-1]

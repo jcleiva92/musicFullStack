@@ -4,23 +4,22 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE-edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Descarga MP3</title>
-        <link href="/static/css/bootstrap.css" rel="stylesheet">
-        <link href="/static/css/styles.css" rel="stylesheet">
+        <title>Arregla tu musica</title>
 		<link href="https://fonts.googleapis.com/css?family=Gloria+Hallelujah|Indie+Flower" rel="stylesheet">
-		
+        <link href="/static/css/bootstrap.css" rel="stylesheet">
+        <link href="/static/css/stylesv7.css" rel="stylesheet">		
     </head>
     <body>
-    <div class="container">
+    <div class="container fondo">
        <div class="row">
 			<div class="col-md-12">
-                <h1 class="super-title text-center"> Descarga y arregla tu música </h1>
+                <h1 class="text-center"> Descarga y arregla tu música </h1>
 				<hr>
             </div>
 	   </div>
        <div class="row">
 			<div class="col-md-12">
-                <h2 class="super-title"> Descarga la música que quieras </h2>
+                <h2> Descarga la música que quieras </h2>
 				<hr>
             </div>
 	   </div>
@@ -30,7 +29,7 @@
 			<div class="col-md-12">
 				<ul>
 					{% for message in messages %}
-						<li class="super-title"> {{message}}</li>
+						<li> {{message}}</li>
 					{% endfor %}
 				</ul>
 			</div>
@@ -39,30 +38,31 @@
 		{% endwith %}
 	   <div class="row">
 			<div class="col-md-4">
-                <h2 class="super-title intro"> Introduce la url del video aqui: </h2>
+                <h2> Introduce la url del video aqui: </h2>
 			</div>
-			<div class="col-md-4">
+			<div class="col-md-4" style="margin-top:25px;">
 				<form action ="{{url_for('gSong')}}" method='POST'>
 				<input type='text' size='30' name='songUrl' placeholder='Url'>
 				<input type='text' size='30' name='path' placeholder='Path'>
-				<input type='submit' value='Descargar'>
+				<input class='boton' type='submit' value='Descargar'>
 			</div>
 			<div class="col-md-4 questionMark">
-				<img class="img-responsive" src="/static/images/question.png" width="15%"" alt="Question Mark">
+				<img class="img-responsive" style='margin-top:35px;' src="/static/images/question.png" width="15%"" alt="Question Mark">
 			</div>
 	   </div>
 	   <div class="row">
 			<div class="col-md-12">
-                <h2 class="super-title"> Arregla la música que quieras </h2>
+				<hr>
+                <h2> Arregla la música que quieras </h2>
 				<hr>
             </div>
 	   </div>
 	   <div class="row">
-			<div class="col-md-6">
-                <a class="super-title" href='{{url_for("fixSongs")}}'>Arreglar</a>
+			<div class="col-md-6 text-right" style='padding:20px;'>
+                <a class='linkin' href='{{url_for("fixSongs")}}'>Arreglar</a>
 			</div>
-			<div class="col-md-6 questionMark">
-				<img class="img-responsive" src="/static/images/question.png" width="15%"" alt="Question Mark">
+			<div class="col-md-6">
+				<img class="img-responsive" style="margin-top:15px;" src="/static/images/question.png" width="15%"" alt="Question Mark">
 			</div>
 	   </div>
 		</div>

@@ -1,0 +1,56 @@
+*{
+	font-family: 'Indie Flower', cursive;
+	color:white;
+}
+
+.boton{
+	color:black;
+}
+
+.botonmarg{
+	margin-top:21px;
+}
+
+.separador{
+	margin:20px;
+}
+
+.division{
+	border-right: solid black;
+    border-left: thick double white;
+}
+
+.contenedor{
+	border-size:5px;
+	border-style:solid;
+	border-color:black;	
+	border-radius:20px;
+	padding:20px;
+}
+
+.linkin{
+	font-size: 24px;
+    border-style: solid;
+    border-color: black;
+    margin-top: 20px;
+}
+
+.fondo{
+	background: rgba(0, 0, 0, 0.7);
+}
+
+body{
+	background-image: url("MarianoTaccolaDeIngensis.jpg");
+}
+
+h1{
+	font-size:40px;
+}
+
+h4{
+	margin-top:5px;
+	margin-bottom:5px;
+}
+hr{
+	margin:0px;
+}

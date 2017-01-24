@@ -1,3 +1,4 @@
+# coding=utf-8
 from __future__ import unicode_literals
 import youtube_dl
 import os
@@ -21,7 +22,7 @@ def downloadSong(song, path):
 		with youtube_dl.YoutubeDL(options) as ydl:
 			info_dict = ydl.extract_info(song, download=False)
 			title = info_dict.get('title', None)
-			#ydl.download([song])
+			ydl.download([song])
 		return title
 	except:
 		return 'Url invalid'

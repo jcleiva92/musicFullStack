@@ -5,23 +5,23 @@
         <meta http-equiv="X-UA-Compatible" content="IE-edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Arregla tu musica</title>
-        <link href="/static/css/bootstrap.css" rel="stylesheet">
-        <link href="/static/css/styles.css" rel="stylesheet">
 		<link href="https://fonts.googleapis.com/css?family=Gloria+Hallelujah|Indie+Flower" rel="stylesheet">
-		
+        <link href="/static/css/bootstrap.css" rel="stylesheet">
+        <link href="/static/css/stylesv7.css" rel="stylesheet">
     </head>
     <body>
-    <div class="container">
-       	<div class="col-md-12">
-				<hr>
-                <h1 class="super-title"> Arregla tu música </h1>
-				<hr>
-            </div>
+    <div class="container fondo">
+		<div class="row">
+			<div class="col-md-12 text-center">
+				<hr class="separador">
+				<h1>Añade Información multimedia</h1>
+			</div>
 		</div>
 		{% with messages = get_flashed_messages() %}
 		{% if messages %}
 		<div class="row">
 			<div class="col-md-12">
+				<hr class="separador">
 				<ul>
 					{% for message in messages %}
 						<li class="super-title"> {{message}}</li>
@@ -37,7 +37,7 @@
 			<div class="col-md-4">
 				</br>
 				<form action ="{{url_for('fixSongs',path=path,val=2)}}" method='POST'>
-				<input type='submit' value='Arreglar'>
+				<input class='boton' type='submit' value='Arreglar'>
 			</div>
 		</div>
 		{% endif %}
@@ -46,75 +46,64 @@
 		{% if val == 1 %}
 		<div class="row">
 			<div class="col-md-4">
-                <h2 class="super-title intro text-right"> Introduce la dirección de tus canciones aqui: </h2>
+                <h2 class="text-right"> Introduce la dirección de tus canciones aqui: </h2>
 			</div>
 			<div class="col-md-4">
 				<form action ="{{url_for('fixSongs',val=False)}}" method='POST'>
-				<input type='text' size='30' name='path' placeholder='Path'>
-				<input type='submit' value='Arreglar'>
+				<input style="margin-top:40px;" type='text' size='30' name='path' placeholder='Path'>
+				<input class='boton' type='submit' value='Arreglar'>
 			</div>
 			<div class="col-md-4 questionMark">
-				<img class="img-responsive" src="/static/images/question.png" width="15%"" alt="Question Mark">
+				<img class="img-responsive" style="margin-top:40px;" src="/static/images/question.png" width="15%" alt="Question Mark">
 			</div>
 		</div>
 		{% endif %}
 		{% if val==2%}
 			<div class="row">
-				<div class="col-md-12 text-left">
-					<h2 class="super-title intro"> Resultados: </h2>
+				<div class="col-md-12">
+					<hr class="separador">
+					<h4>Elige el mejor resultado: </h4>
+					<hr class="separador">
 				</div>
 			</div>
-			<div class="row">
-				<div class="col-md-1"><h3 class="super-title text-center">Option</h3></div>
-					{% for j in results.keys() %}
-					{% if j !='UrlSong' and j != 'Cover'%}
-					{% if j !='UrlAlbum' %}
-					<div class="col-md-2 text-center">
-					{% else %}
-					<div class="col-md-3 text-center">
-					{% endif %}
-						{% if j == 'Name' %}
-							<h3 class="super-title">Song</h3>
-						{% elif j == 'UrlAlbum'%}
-							<h3 class="super-title">Album Cover</h3>
-						{% else %}
-							<h3 class="super-title">{{j}}</h3>
-						{% endif %}
-					</div>
-					{% endif %}
-					{% endfor %}
-				</div>
-				</div>
+
 			{% for i in range(0,(results.values()[0].keys())| length)%}
-				<div class="row">
-					<div class="col-md-1"><p class="super-title text-center">{{i}}</p></div>
-						{% for j in results.keys() %}
-						{% if j !='UrlSong' and j != 'Cover'%}
-						{% if j !='UrlAlbum' %}
-						<div class="col-md-2 text-center">
-						<p class="super-title">{{results[j][i]}}</p>
-						{% else %}
-						<div class="col-md-3 text-center">
-						{% if results[j][i] != 'No Available'%}
-							<img class="img-responsive thumb center-block" src="{{results[j][i]}}" alt="Cover Album" width=50%>
-						{%else%}
-							<p class="super-title text-center">{{results[j][i]}}</p>
-						{%endif%}
-						{% endif %}
-							
-						</div>
-						{% endif %}
-						{% endfor %}
+				{% if i%2 == 0%}
+				<div class="row contenedor">
+				{% endif %}
+					{% for j in results.keys() %}
+					{%if j =='UrlAlbum'%}
+					<div class="col-md-2">
+						<img class="img-responsive" src="{{results[j][i]}}" alt="Cover Album">
 					</div>
+					{%endif%}
+					{%endfor%}
+					
+					{% set t =0 %}
+					<div class="col-md-4 division">
+						{%if t==0 %}
+						<a href='{{url_for("resultadosFinal",pos=i)}}'><h3>Opción:{{' '+i|string}}</h3></a><hr>
+						{%set t=1%}
+						{%endif%}	
+						{% for j in results.keys() %}
+							{% if j not in ['UrlAlbum','UrlSong','Cover']%}
+								<h4>{{j + ': '+results[j][i]}}</h4><hr>
+							{%endif%}	
+						{%endfor%}
+					</div>
+					
+				{% if i%2 == 1%}	
 				</div>
+				{% endif %}
 			{% endfor %}		
+			
 			<div class="row">
-				<div class="col-md-3 text-right">
+				<div class="col-md-6 text-right">
 					<h2 class="super-title intro"> Volver al inicio?</h2>
 				</div>
-				<div class="col-md-9">
+				<div class="col-md-6 botonmarg">
 					<form action ="{{url_for('gSong')}}" method='GET'>
-					<input type='submit' value='Volver'>
+					<input class='boton' type='submit' value='Volver'>
 				</div>
 			</div>
 		{% endif %}
