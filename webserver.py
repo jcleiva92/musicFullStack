@@ -1,14 +1,18 @@
+# -*- coding: utf-8 -*-
+
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 app = Flask(__name__)
 
 from getSong import downloadSong
-from attachMeta import getFileName, cleanFileName, getPage, getResults, getGenre, getThumb, downloadThumb
+from attachMeta import getFileName, cleanFileName, getPage, getResults, getGenre, getThumb, downloadThumb, attachTags, getLyrics
 
 GResult=dict()
 GPath=''
+GArchName=''
 @app.route('/')	
 @app.route('/index/',methods=['GET','POST'])
 def gSong():
+	global GArchName
 	if request.method=='POST':
 		songs=request.form['songUrl']
 		path=request.form['path']
@@ -44,8 +48,10 @@ def fixSongs(path=None,val=None):
 			results=getResults(pageTableBase,nResults)
 			global GResult
 			global GPath
+			global GArchName
 			GResult=results
 			GPath=path
+			GArchName=fname
 			flash("Cancion "+fname+" para arreglar en la direccion "+path)
 			
 		if val>=1: return render_template('fixSongs.html',path=path, val=2, results=results)
@@ -57,10 +63,18 @@ def fixSongs(path=None,val=None):
 def resultadosFinal(pos):
 	global GResult
 	global GPath
+	global GArchName
+	info=dict()
 	genre=getGenre(GResult['UrlSong'][pos])
-	if GResult['Cover'][pos]!='No Available': downloadThumb(GResult['UrlAlbum'][pos],GResult['Name'][pos],GPath)
-	print genre
-	return render_template('resultados.html',pos=pos)
+	if GResult['Cover'][pos]!='No Available': 
+		tCover=downloadThumb(GResult['UrlAlbum'][pos],GResult['Name'][pos],GPath)
+	for key in GResult.keys():
+		info[key]=GResult[key][pos]
+	print info['Band'],info['Name']
+	lyrics=getLyrics(info['Band'],info['Name'])
+	newName=attachTags(GArchName,info,genre,lyrics,tCover,GPath)
+	
+	return render_template('resultados.html',pos=pos,newName=newName)
 
 
 '''

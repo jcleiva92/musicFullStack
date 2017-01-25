@@ -1,4 +1,4 @@
-# coding=utf-8
+# -*- coding: utf-8 -*-
 
 import re
 import os
@@ -14,7 +14,7 @@ def getFileName(path,nResults):
 	
 def cleanFileName(fname):
 	'''Remove bad signs and words from file name'''
-	fname=fname.decode('cp1252').encode('utf-8')#Big encode problem
+	fname=fname.encode('utf-8')#Big encode problem
 	fname=fname[:-3]#removes.mp3
 	badSign="'?.%&!|<>-/,\\+*:"+'"' 
 	badWords=[' sub. ', 'subtitulado','subtitulada', 'lyrics', ' video','hd','official', 'vevo','amv', 'con letra', 'download', 'wlyrics']
@@ -93,7 +93,10 @@ def downloadThumb(urlAlbum,name,path):
 	newName=cleanBasic(name)	
 	if '.jpg' in urlAlbum:
 		urllib.urlretrieve(urlAlbum,newName+'.jpg')
-	else: urllib.urlretrieve(urlAlbum,newName+'.png')
+		return newName+'.jpg'
+	else: 
+		urllib.urlretrieve(urlAlbum,newName+'.png')
+		return newName+'.png'
 	
 def getThumb(urlAlbum):
 	'''search and download Thumbnail'''
@@ -118,5 +121,61 @@ def getGenre(urlSong):
 		aux,i=getInfo(pg,i,'<bdi>')
 		genre+=aux+'-'
 	if not genre:
-		genre='No genre'
+		genre='NG-'
 	return genre[:-1]
+	
+def attachTags(fname,info,genre,lyrics,tCover,path):
+	os.chdir(path)
+	
+	'''Attach Metadata to file'''
+	try: 
+		tags = ID3(fname,v2_version=3)
+	except ID3NoHeaderError:
+		print "Adding ID3 header;",
+		tags = ID3()
+	
+	tags["TIT2"] = TIT2(encoding=3, text=info['Name'])
+	tags["TALB"] = TALB(encoding=3, text=info['Album'])
+	tags["TPE1"] = TPE1(encoding=3, text=info['Band'])
+	tags["TCON"] = TCON(encoding=3, text=genre)
+	tags["TRCK"] = TRCK(encoding=3, text=info['Track'])
+	newName=cleanBasic(info['Name'])
+	if lyrics:
+		lyrics=lyrics.decode('utf-8')
+		tags["USLT"] = USLT(encoding=3, desc=u'desc', text=lyrics)
+		text_file = open(newName+".txt", "w")
+		lyrics=lyrics.encode('cp1252')
+		text_file.write(lyrics)
+
+	imag=''
+	if '.jpg' in tCover:
+		imag='image/jpeg'
+	if '.png' in tCover:
+		imag='image/png'
+	try:
+		tags["APIC"] = APIC(encoding=3, mime=imag, type=3, desc=u'Cover',data=open(tCover,'rb').read())
+	except: 
+		pass
+	
+	tags.save(fname,v2_version=3,v1=2)
+	os.remove(tCover)
+	newName=cleanBasic(info['Name'])+'.mp3'
+	os.rename(fname,newName)
+	return newName
+
+def getLyrics(artist,song):
+	artist=cleanBasic(artist)
+	song=cleanBasic(song)
+	if u'\xf3' in song:
+		song=song.replace(u'\xf3',u'o')
+	page=urllib.urlopen('https://www.musixmatch.com/search/'+artist+' '+song).read()
+	i=page.find('"track_share_url":"')+len('"track_share_url":"')
+	f=page.find('"',i)
+	try:
+		page=urllib.urlopen(page[i:f]).read()
+	except:
+		return None
+	i=page.find('"body":"')+len('"body":"')
+	f=page.find('","language":"')
+	lyrics=page[i:f]
+	return lyrics.replace('\\n','\n')
