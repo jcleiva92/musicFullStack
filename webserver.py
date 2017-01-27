@@ -4,7 +4,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash, jso
 app = Flask(__name__)
 
 from getSong import downloadSong
-from attachMeta import getFileName, cleanFileName, getPage, getResults, getGenre, getThumb, downloadThumb, attachTags, getLyrics
+from attachMeta import fDirectory, getFileName, cleanFileName, getPage, getResults, getGenre, getThumb, downloadThumb, attachTags, getLyrics
 
 GResult=dict()
 GPath=''
@@ -34,6 +34,8 @@ def gSong():
 @app.route('/index/fixSongs/<string:path>/', methods=['GET','POST'])
 @app.route('/index/fixSongs/<string:path>/<int:val>/', methods=['GET','POST'])
 def fixSongs(path=None,val=None):
+	'''val=2 elegir resultado, val=1 pedir path, val=0 cancion descargada'''
+	print val, request.method
 	if path is None:
 		path='Sin path'
 	if val is None:
@@ -41,7 +43,7 @@ def fixSongs(path=None,val=None):
 	nResults=6
 	if request.method=='POST':
 		if path =='Sin path': path=request.form['path']
-		fnames=getFileName(path,nResults)
+		fnames=getFileName(path)
 		for fname in fnames:
 			searchFor=cleanFileName(fname)
 			pageTableBase=getPage(searchFor,0)
@@ -53,9 +55,9 @@ def fixSongs(path=None,val=None):
 			GPath=path
 			GArchName=fname
 			flash("Cancion "+fname+" para arreglar en la direccion "+path)
-			
-		if val>=1: return render_template('fixSongs.html',path=path, val=2, results=results)
-		return redirect(url_for('fixSongs',path=path, val=val))
+			return render_template('fixSongs.html',path=path, val=2, results=results)
+		#if val>=1: return render_template('fixSongs.html',path=path, val=2, results=results)
+		#return redirect(url_for('fixSongs',path=path, val=val))
 	else:
 		return render_template('fixSongs.html',path=path, val=val)
 
@@ -68,12 +70,13 @@ def resultadosFinal(pos):
 	genre=getGenre(GResult['UrlSong'][pos])
 	if GResult['Cover'][pos]!='No Available': 
 		tCover=downloadThumb(GResult['UrlAlbum'][pos],GResult['Name'][pos],GPath)
+	else:
+		tCover=''
 	for key in GResult.keys():
 		info[key]=GResult[key][pos]
-	print info['Band'],info['Name']
 	lyrics=getLyrics(info['Band'],info['Name'])
 	newName=attachTags(GArchName,info,genre,lyrics,tCover,GPath)
-	
+	fDirectory(newName,GPath)
 	return render_template('resultados.html',pos=pos,newName=newName)
 
 

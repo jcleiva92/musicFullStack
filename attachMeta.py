@@ -7,8 +7,10 @@ from mutagen.mp3 import MP3
 from mutagen.id3 import ID3NoHeaderError
 from mutagen.id3 import ID3, TIT2, TALB, TPE1, TCON, TRCK, APIC, USLT
 import pandas as pd
+import shutil
+import webbrowser
 
-def getFileName(path,nResults):
+def getFileName(path):
 	fileList=os.listdir(path)
 	return [archName for archName in fileList if '.mp3' in archName]
 	
@@ -31,6 +33,7 @@ def getTable(page):
 def getPage(song,t):
 	'''get the results page for a song File Name in MusicBrainz'''
 	page=urllib.urlopen('https://musicbrainz.org/search?query='+song+'&type=recording&method=indexed').read()
+	print 'try '+str(t)
 	if page.find('Search Error - MusicBrainz')> -1 : 
 		t+=1
 		return getPage(song,t)
@@ -158,7 +161,7 @@ def attachTags(fname,info,genre,lyrics,tCover,path):
 		pass
 	
 	tags.save(fname,v2_version=3,v1=2)
-	os.remove(tCover)
+	if tCover!='': os.remove(tCover)
 	newName=cleanBasic(info['Name'])+'.mp3'
 	os.rename(fname,newName)
 	return newName
@@ -168,14 +171,34 @@ def getLyrics(artist,song):
 	song=cleanBasic(song)
 	if u'\xf3' in song:
 		song=song.replace(u'\xf3',u'o')
+	if u'\xc1' in song:
+		song=song.replace(u'\xc1',u'a')
+	if u'\u2019' in song:
+		song=song.replace(u'\u2019',u'')
 	page=urllib.urlopen('https://www.musixmatch.com/search/'+artist+' '+song).read()
+	webbrowser.open('https://www.musixmatch.com/search/'+artist+' '+song)
 	i=page.find('"track_share_url":"')+len('"track_share_url":"')
 	f=page.find('"',i)
 	try:
 		page=urllib.urlopen(page[i:f]).read()
 	except:
+		print 'No Lyrics'
 		return None
 	i=page.find('"body":"')+len('"body":"')
 	f=page.find('","language":"')
 	lyrics=page[i:f]
 	return lyrics.replace('\\n','\n')
+
+def fDirectory(fname,path):
+	
+	try:
+		pathD=path+r'\fixed'
+		os.makedirs(pathD)
+	except:
+		print 'Exist'
+	song=[fname,fname[:-3]+'txt']
+	listFiles=os.listdir(path) 
+	for arch in song:
+		if arch in listFiles:
+			shutil.copy(path+'\\'+arch, pathD)
+			os.remove(path+'\\'+arch)

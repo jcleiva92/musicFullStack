@@ -15,6 +15,7 @@
 			<div class="col-md-12 text-center">
 				<hr class="separador">
 				<h1>Añade Información multimedia</h1>
+				<hr class="separador">
 			</div>
 		</div>
 		{% with messages = get_flashed_messages() %}
@@ -49,7 +50,7 @@
                 <h2 class="text-right"> Introduce la dirección de tus canciones aqui: </h2>
 			</div>
 			<div class="col-md-4">
-				<form action ="{{url_for('fixSongs',val=False)}}" method='POST'>
+				<form action ="{{url_for('fixSongs')}}" method='POST'>
 				<input style="margin-top:40px; color:black;" type='text' size='30' name='path' placeholder='Path'>
 				<input class='boton' type='submit' value='Arreglar'>
 			</div>
